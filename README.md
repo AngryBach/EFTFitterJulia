@@ -1,19 +1,19 @@
 # EFTFitterJulia
 
-The files needed in each "Julia_Files_WC":
-  Commands_cG.jl        - From ??
-  Correlation_data.jl   - (common) From ??
-  inputs_obs_sep.jl
-  runEFTfitter.jl
-  Unfolded_totxt.jl
+The files needed in each "Julia_Files_WC": <br>
+  Commands_cG.jl        - From ??          <br>
+  Correlation_data.jl   - (common) From ?? <br>
+  inputs_obs_sep.jl <br>
+  runEFTfitter.jl  <br>
+  Unfolded_totxt.jl <br>
   
-  Create_single_Obs.py  -  
-  CL_posterior_plot.py  - 
-  ChiSqMin.py           -
-  RunJulia.sh           -
-  Summary.py            -
+  Create_single_Obs.py  -  <br>
+  CL_posterior_plot.py  - <br>
+  ChiSqMin.py           - <br>
+  RunJulia.sh           - <br>
+  Summary.py            - <br>
 
 
-The files needed in "ObsN" for each WC: 
+The files needed in "ObsN" for each WC: <br>
 
 
