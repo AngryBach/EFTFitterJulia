@@ -1,0 +1,83 @@
+import re
+import numpy as np
+
+# hist_rebin_names = ['h_jet_W_lead_pt_Rebin;1', 'h_jet_W_lead_y;1', 'h_jet_W_sublead_pt_Rebin;1', 'h_jet_W_sublead_y;1', 'h_jet_W_lead_jet_W_sublead_Dy;1', 'h_jet_W_lead_jet_W_sublead_Dphi;1', 'h_jet_rad_lead_pt_Rebin;1', 'h_jet_rad_lead_y;1', 'h_top_lep_jet_rad_lead_Dphi;1', 'h_top_had_jet_rad_lead_Dphi;1', 'h_jet_W_lead_jet_rad_lead_Dphi;1', 'h_mttbar_jet_rad_lead_Rebin;1', 'h_jet_rad_sublead_pt_Rebin;1', 'h_jet_rad_sublead_y;1', 'h_jet_rad_lead_jet_rad_sublead_Dy;1', 'h_jet_rad_lead_jet_rad_sublead_Dphi;1', 'h_top_lep_jet_rad_sublead_Dphi;1', 'h_top_had_jet_rad_sublead_Dphi;1', 'h_jet_W_lead_jet_rad_sublead_Dphi;1', 'h_m_jet_rad_lead_jet_rad_sublead_Rebin;1']
+hist_names = ['h_jet_W_lead_pt;1', 'h_jet_W_lead_y;1', 'h_jet_W_sublead_pt;1', 'h_jet_W_sublead_y;1', 'h_jet_W_lead_jet_W_sublead_Dy;1', 'h_jet_W_lead_jet_W_sublead_Dphi;1', 'h_jet_rad_lead_pt;1', 'h_jet_rad_lead_y;1', 'h_top_lep_jet_rad_lead_Dphi;1', 'h_top_had_jet_rad_lead_Dphi;1', 'h_jet_W_lead_jet_rad_lead_Dphi;1', 'h_mttbar_jet_rad_lead;1', 'h_jet_rad_sublead_pt_Rebin;1', 'h_jet_rad_sublead_y;1', 'h_jet_rad_lead_jet_rad_sublead_Dy;1', 'h_jet_rad_lead_jet_rad_sublead_Dphi;1', 'h_top_lep_jet_rad_sublead_Dphi;1', 'h_top_had_jet_rad_sublead_Dphi;1', 'h_jet_W_lead_jet_rad_sublead_Dphi;1', 'h_m_jet_rad_lead_jet_rad_sublead;1','h_Combined;1']
+
+
+CL68dict ={}
+CL68dict_2 = {}
+CL95dict ={}
+CL95dict_2 ={}
+Modedict ={}
+for idx in range(len(hist_names)):
+
+    if idx == 20:
+        fname = './Combined/WCNAME_marg_posterior_ranges_Combined.txt'
+    else:
+        fname = './Obs'+str(idx)+'/WCNAME_marg_posterior_ranges_Obs'+str(idx)+'.txt'
+    
+    with open(fname, 'r') as file:
+        data = file.readlines()
+        cl99 = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[0])
+        cl95 = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[2])
+        cl68 = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[4])
+
+        cl99_2 = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[1])
+        cl95_2 = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[3])
+        cl68_2 = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[5])
+
+
+        mode = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[6])[0]
+        mean = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[7])[0]
+        std = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[8])[0]
+        marg_mode = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[9])[0]
+
+        with open('Posterior_summary.txt','a') as sum_file:
+            name = hist_names[idx][2:-2]
+            sum_file.write(name+'\n'+str(np.round(float(cl99[0]),4))+'\t'+str(np.round(float(cl99[1]),4))+'\n' )
+            sum_file.write(str(np.round(float(cl95[0]),4))+'\t'+str(np.round(float(cl95[1]),4))+'\n' )
+            sum_file.write(str(np.round(float(cl68[0]),4))+'\t'+str(np.round(float(cl68[1]),4))+'\n' )
+            sum_file.write(str(np.round(float(mode),4))+'\t'+str(np.round(float(mean),4))+str(np.round(float(std),4))+'\t'+str(np.round(float(marg_mode),4))+'\n\n' )
+    
+    if idx < 10:
+        CL68dict['0'+str(idx)+name] = (np.round(float(cl68[0]),4),np.round(float(cl68[1]),4))
+        CL68dict_2['0'+str(idx)+name] = (np.round(float(cl68_2[0]),4),np.round(float(cl68_2[1]),4))
+        CL95dict['0'+str(idx)+name] = (np.round(float(cl95[0]),4),np.round(float(cl95[1]),4))
+        CL95dict_2['0'+str(idx)+name] = (np.round(float(cl95_2[0]),4),np.round(float(cl95_2[1]),4))
+        Modedict['0'+str(idx)+name] = np.round(float(mode),4)
+    else:
+        CL68dict[str(idx)+name] = (np.round(float(cl68[0]),4),np.round(float(cl68[1]),4))
+        CL68dict_2[str(idx)+name] = (np.round(float(cl68_2[0]),4),np.round(float(cl68_2[1]),4))
+        CL95dict[str(idx)+name] = (np.round(float(cl95[0]),4),np.round(float(cl95[1]),4))
+        CL95dict_2[str(idx)+name] = (np.round(float(cl95_2[0]),4),np.round(float(cl95_2[1]),4))
+        Modedict[str(idx)+name] = np.round(float(mode),4)
+
+
+#No theory limits for ctGIm, cG
+with open('/home/shmukher/EFTFitterJulia/TheoryLimits.txt', 'r') as file:
+    data = file.readlines()
+    for row in data:
+        word = 'WCNAME'
+        if row.find(word) != -1:
+            lims = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", data[data.index(row)])
+            l = len(lims)
+            CL68dict['21Theory'] = (float(lims[l-4]),float(lims[l-3]))
+            CL95dict['21Theory'] = (float(lims[l-2]),float(lims[l-1]))
+            CL68dict_2['21Theory'] = (0.0, 0.0)
+            CL95dict_2['21Theory'] = (0.0, 0.0)
+
+
+with open('Posterior_summary.py','a') as sum_file:
+    sum_file.write('data68_1 = '+str(CL68dict))
+    sum_file.write('\n')
+    sum_file.write('data68_2 = '+str(CL68dict_2))
+    sum_file.write('\n')
+    sum_file.write('\n')
+    sum_file.write('data95_1 = '+str(CL95dict))
+    sum_file.write('\n')
+    sum_file.write('data95_2 = '+str(CL95dict_2))
+    sum_file.write('\n')
+    sum_file.write('\n')
+    sum_file.write(str(Modedict))
+    sum_file.write('\n')

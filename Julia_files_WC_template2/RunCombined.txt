@@ -1,0 +1,8 @@
+#!/bin/bash
+#SBATCH --mem-per-cpu=4G
+#SBATCH -o /home/shmukher/EFTFitterJulia/Julia_files_WCNAME/Errorlogs/errorlog.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=shourya.mukherjee@cern.ch
+#SBATCH --export=ALL
+
+julia runEFTfitter_combined.jl

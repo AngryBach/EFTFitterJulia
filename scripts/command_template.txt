@@ -1,0 +1,20 @@
+function get_coeffs_HIST(i) 
+    coeffs_HIST = DATA
+    return coeffs_HIST[i]
+end
+
+function my_dist_func_HIST(params, i)
+    coeffs_HIST = get_coeffs_HIST(i)
+    return coeffs_HIST[1] + coeffs_HIST[2] * params.WCNAME + coeffs_HIST[3] * params.WCNAME * params.WCNAME
+end
+
+dxsec_HIST=Function[]
+for i in 1:BCOUNT
+    @eval begin
+        function $(Symbol("dxsec_HIST_bin$i"))(params)
+            return my_dist_func_HIST(params, $i)
+        end
+        push!(dxsec_HIST, $(Symbol("dxsec_HIST_bin$i")))
+    end
+end
+

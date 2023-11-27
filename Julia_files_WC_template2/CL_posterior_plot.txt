@@ -1,0 +1,91 @@
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from Posterior_summary import data68_1,data68_2,data95_1,data95_2
+
+font = {'size'   : 22}
+matplotlib.rc('font', **font)
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "sans-serif",
+    "mathtext.fontset": "dejavusans",
+    "font.weight": 'bold'
+})
+
+def plot_rect(data, data2, data3, data4, delta=0.2):
+    """data is a dictionary, {"Label":(low,hi), ... }
+    return a drawing that you can manipulate, show, save etc"""
+
+    yspan = len(data)
+    yplaces = [.5+i for i in range(yspan)]
+    ylabels = sorted(data.keys())
+
+    fig = plt.figure(figsize=(20,16))
+    ax = fig.add_subplot(111)
+    ax.set_yticks(yplaces)
+    #ax.set_xticks([-2,-1.5,-1,-0.5,0,0.5,1,1.5,2])
+    ax.set_xticks(range(-11,11))
+
+    m = [r'$ \mathrm{p_T^{jet-W-lead}}$',r'$\mathrm{|y^{jet-W-lead}|}$',r'$ \mathrm{p_T^{jet-W-sublead}}$',r'$\mathrm{|y^{jet-W-sublead}|}$',r'$\mathrm{|\Delta y^{jet-W-lead\ -\ jet-W-sublead}|}$',r'$\mathrm{|\Delta \phi^{jet-W-lead\ -\ jet-W-sublead}|}$',
+    r'$\mathrm{p_T^{jet-rad-lead}}$',r'$\mathrm{|y^{jet-rad-lead}|}$',r'$\mathrm{|\Delta \phi^{toplep\ -\ jet-rad-lead}|}$',r'$\mathrm{|\Delta \phi^{tophad\ -\ jet-rad-lead}|}$',r'$\mathrm{|\Delta \phi^{jet-W-lead\ -\ jet-rad-lead}|}$',r'$\mathrm{ m^{t \bar t\ -\ jet-rad-lead}}$',
+    r'$\mathrm{p_T^{jet-rad-sublead}}$', r'$\mathrm{|y^{jet-rad-sublead}|}$', r'$\mathrm{|\Delta y^{jet-rad-lead\ -\ jet-rad-sublead}|}$', r'$\mathrm{|\Delta \phi^{jet-rad-lead\ -\ jet-rad-sublead}|}$',
+    r'$\mathrm{|\Delta \phi^{toplep\ -\ jet-rad-sublead}|}$',r'$\mathrm{|\Delta \phi^{tophad\ -\ jet-rad-sublead}|}$',r'$\mathrm{|\Delta \phi^{jet-W-lead\ -\ jet-rad-sublead}|}$',r'$\mathrm{ m^{jet-rad-lead\ -\ jet-rad-sublead}}$',
+    r'Combined',r'Theory']
+   
+    ax.set_yticklabels(m)
+    
+    ax.set_ylim((0,yspan))
+    ax.set_title(r'ATLAS Internal \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 68\% and 95\% CL Summary',fontweight ="bold") #\ \ '+str(CL)+r'\% CL
+
+
+    # later we'll need the min and max in the union of intervals
+    low = 99
+    hi = -99
+    for pos, label in zip(yplaces,ylabels):
+        start, end = data3[label]
+        ax.add_patch(patches.Rectangle((start,pos-delta/2.0),end-start,delta,color='gold'))
+        if start<low : low=start
+        if end>hi : hi=end
+
+    for pos, label in zip(yplaces,ylabels):
+        start, end = data4[label]
+        ax.add_patch(patches.Rectangle((start,pos-delta/2.0),end-start,delta,color='gold'))
+        if start<low : low=start
+        if end>hi : hi=end
+
+    for pos, label in zip(yplaces,ylabels):
+        start, end = data[label]
+        ax.add_patch(patches.Rectangle((start,pos-delta/2.0),end-start,delta,color='green'))
+        if start<low : low=start
+        if end>hi : hi=end
+
+    for pos, label in zip(yplaces,ylabels):
+        start, end = data2[label]
+        ax.add_patch(patches.Rectangle((start,pos-delta/2.0),end-start,delta,color='green'))
+        if start<low : low=start
+        if end>hi : hi=end
+
+    
+
+
+    # little small trick, draw an invisible line so that the x axis limits are automatically adjusted...
+    ax.plot((low,hi),(0,0))
+
+    xmin, xmax = ax.get_xlim()
+    ax.hlines((6,12,20),xmin,xmax,colors='k', linestyles='dashed', alpha = 0.7)
+
+
+    ax.grid(axis='x')
+    a = ax.get_xgridlines()
+    b = a[11]
+    b.set_color('black')
+    b.set_linewidth(3)
+
+    return ax
+
+
+# '21Theory': (0.0,0.0)
+
+ax = plot_rect(data68_1,data68_2,data95_1,data95_2)
+ax.set_xlabel('WCNAME')
+plt.savefig('WCNAME_CL.pdf',bbox_inches='tight')

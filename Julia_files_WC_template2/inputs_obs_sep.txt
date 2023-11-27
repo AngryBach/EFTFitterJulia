@@ -1,0 +1,29 @@
+# ============= Parameters =============================================#
+parameters = BAT.NamedTupleDist(
+    WCNAME = -25..25,
+)
+
+
+# ========================================= Observables ============================================#
+include("../Commands_WCNAME.jl")
+
+
+
+# ========================================= Unfolded data ============================================#
+include("../Unfolded_totxt.jl")
+
+
+
+# ============= Measurements ===========================================#
+measurements = (
+    mHIST = MeasurementDistribution(dxsec_HIST,obs_HIST, uncertainties = (stat = uncs_stat_HIST, syst = uncs_max_HIST,), active=true),
+)
+
+# ============= Correlations ===========================================#
+include("../Correlation_data.jl")
+
+correlations = (
+    stat = Correlation(dist_corr_HIST, active=true),
+    syst = Correlation(dist_corr_HIST, active=true),
+)
+

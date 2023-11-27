@@ -1,0 +1,32 @@
+import os
+import subprocess
+
+hist_rebin_names = ['h_jet_W_lead_pt_Rebin;1', 'h_jet_W_lead_y;1', 'h_jet_W_sublead_pt_Rebin;1', 'h_jet_W_sublead_y;1', 'h_jet_W_lead_jet_W_sublead_Dy;1', 'h_jet_W_lead_jet_W_sublead_Dphi;1', 'h_jet_rad_lead_pt_Rebin;1', 'h_jet_rad_lead_y;1', 'h_top_lep_jet_rad_lead_Dphi;1', 'h_top_had_jet_rad_lead_Dphi;1', 'h_jet_W_lead_jet_rad_lead_Dphi;1', 'h_mttbar_jet_rad_lead_Rebin;1', 'h_jet_rad_sublead_pt_Rebin;1', 'h_jet_rad_sublead_y;1', 'h_jet_rad_lead_jet_rad_sublead_Dy;1', 'h_jet_rad_lead_jet_rad_sublead_Dphi;1', 'h_top_lep_jet_rad_sublead_Dphi;1', 'h_top_had_jet_rad_sublead_Dphi;1', 'h_jet_W_lead_jet_rad_sublead_Dphi;1', 'h_m_jet_rad_lead_jet_rad_sublead_Rebin;1']
+
+for idx in range(len(hist_rebin_names)):
+    path = '/home/shmukher/EFTFitterJulia/Julia_files_WCNAME/Obs'+str(idx)+'/'
+    if not os.path.exists(path): 
+        os.makedirs(path)
+    subprocess.getoutput('cp inputs_obs_sep.jl '+path)
+    subprocess.getoutput('cp runEFTfitter.jl '+path)
+
+    print(path+'inputs_obs_sep.jl')
+    with open(r'/home/shmukher/EFTFitterJulia/Julia_files_WCNAME/inputs_obs_sep.jl', 'r') as file:
+        data = file.read()
+        h = hist_rebin_names[idx]
+        data1 = data.replace('HIST', h[2:-2])
+        with open(path+'inputs_obs_sep.jl', 'w') as file:
+            file.write(data1)
+    
+    with open(r'/home/shmukher/EFTFitterJulia/Julia_files_WCNAME/runEFTfitter.jl', 'r') as file:
+        data = file.read()
+        h = hist_rebin_names[idx]
+        data1 = data.replace('ObsX', 'Obs'+str(idx))
+        with open(path+'runEFTfitter.jl', 'w') as file:
+            file.write(data1)
+    # with open(path+'runEFTfitter.jl', 'w') as file:
+    #     data = file.read()
+    #     h = hist_rebin_names[idx]
+    #     data1 = data.replace('HIST', h[2:-2])
+    #     file.write(data1)
+

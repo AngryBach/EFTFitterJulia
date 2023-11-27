@@ -1,0 +1,30 @@
+# later we'll need the min and max in the union of intervals
+    low, hi =  data3[ylabels[0]]
+    for pos, label in zip(yplaces,ylabels):
+        start, end = data3[label]
+        ax.add_patch(patches.Rectangle((start,pos-delta/2.0),end-start,delta,color='gold'))
+        if start<low : low=start
+        if end>hi : hi=end
+
+    low, hi =  data4[ylabels[0]]
+    for pos, label in zip(yplaces,ylabels):
+        start, end = data4[label]
+        if low != hi:
+            ax.add_patch(patches.Rectangle((start,pos-delta/2.0),end-start,delta,color='gold'))
+        if start<low : low=start
+        if end>hi : hi=end
+
+    low, hi =  data[ylabels[0]]
+    for pos, label in zip(yplaces,ylabels):
+        start, end = data[label]
+        ax.add_patch(patches.Rectangle((start,pos-delta/2.0),end-start,delta,color='green'))
+        if start<low : low=start
+        if end>hi : hi=end
+
+    low, hi =  data2[ylabels[0]]
+    for pos, label in zip(yplaces,ylabels):
+        start, end = data2[label]
+        if low != hi:
+            ax.add_patch(patches.Rectangle((start,pos-delta/2.0),end-start,delta,color='green'))
+        if start<low : low=start
+        if end>hi : hi=end

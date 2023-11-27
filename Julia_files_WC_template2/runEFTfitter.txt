@@ -1,0 +1,89 @@
+using EFTfitter
+using BAT            # for sampling
+using IntervalSets   # for specifying the prior
+using Distributions  # for specifying the prior
+using LaTeXStrings
+using JLD2
+using FileIO
+using Plots # for plotting
+
+# include definitions of observables, measurements,
+# uncertainties and correlations from the inputs file:
+include("inputs_obs_sep.jl")
+
+# create an `EFTfitterModel` object:
+model = EFTfitterModel(parameters, measurements, correlations)
+# create posterior distribution:
+posterior = PosteriorDensity(model);
+
+
+# sample the posterior distribution with BAT.jl:
+algorithm = MCMCSampling(mcalg = MetropolisHastings(), nsteps = 10^6, nchains = 10)
+samples = bat_sample(posterior, algorithm).result;
+save("/home/shmukher/EFTFitterJulia/Julia_files_WCNAME/ObsX/samples_ObsX.jld2", "samples", samples);
+
+# create and display a `SampledDensity` object for a quick overview of results:
+sd = SampledDensity(posterior, samples)
+display(sd)
+
+global_mode_wc = mode(samples).WCNAME[1]
+marginal_mode_wc = bat_marginalmode(samples).result.WCNAME[1]
+
+#  plot the posterior distribution:
+pyplot(size=(450, 350))
+p = plot(samples, vsel_label = ["\$c_{nocWCN}\$"], diagonal=Dict([("ylims", (0, Inf)), ("framestyle", ":box"), ("xguide_position", :right), ("yguide_postion", :top)]))
+savefig(p, "/home/shmukher/EFTFitterJulia/Julia_files_WCNAME/ObsX/results_ObsX.pdf")
+
+open("/home/shmukher/EFTFitterJulia/Julia_files_WCNAME/ObsX/WCNAME_marg_posterior_ObsX.txt", "w") do f
+    for i in 1:size(p.series_list[1][:subplot].series_list[1][:x])[1]
+       write(f, "$(p.series_list[1][:subplot].series_list[4][:x][i])\t$(p.series_list[1][:subplot].series_list[4][:y][i])\n")
+   end
+end
+
+# open("ctq_marg_posterior.txt", "w") do f
+#     for i in 1:size(p.series_list[15][:subplot].series_list[1][:x])[1]
+#        write(f, "$(p.series_list[15][:subplot].series_list[4][:x][i])\t$(p.series_list[15][:subplot].series_list[4][:y][i])\n")
+#    end
+# end
+
+wc_99 = get_smallest_interval_edges(samples, :WCNAME, 0.9972, bins=200, atol=0.1)
+wc_95 = get_smallest_interval_edges(samples, :WCNAME, 0.9553, bins=200, atol=0.1)
+wc_68 = get_smallest_interval_edges(samples, :WCNAME, 0.6841, bins=200, atol=0.1)
+
+open("/home/shmukher/EFTFitterJulia/Julia_files_WCNAME/ObsX/WCNAME_marg_posterior_ranges_ObsX.txt", "w") do f
+    write(f, "$(wc_99.lower[1])\t$(wc_99.upper[1])\n")
+    if size(wc_99.lower)[1]>1
+        write(f, "$(wc_99.lower[2])\t")
+        write(f, "$(wc_99.upper[2])\n")
+    else
+        write(f, "0\t")
+        write(f, "0\n")
+    end
+
+    write(f, "$(wc_95.lower[1])\t$(wc_95.upper[1])\n")
+    if size(wc_95.lower)[1]>1
+        write(f, "$(wc_95.lower[2])\t")
+        write(f, "$(wc_95.upper[2])\n")
+    else
+        write(f, "0\t")
+        write(f, "0\n")
+    end
+
+    write(f, "$(wc_68.lower[1])\t$(wc_68.upper[1])\n")
+    if size(wc_68.lower)[1]>1
+        write(f, "$(wc_68.lower[2])\t")
+        write(f, "$(wc_68.upper[2])\n")
+    else
+        write(f, "0\t")
+        write(f, "0\n")
+    end
+
+    write(f, "$(mode(samples).WCNAME[1])\n")
+    write(f, "$(mean(samples).WCNAME[1])\n")
+    write(f, "$(std(samples).WCNAME[1])\n")
+    write(f, "$(bat_marginalmode(samples).result.WCNAME[1])\n")
+
+end
+
+p = plot(samples, 0.95)
+savefig(p, "/home/shmukher/EFTFitterJulia/Julia_files_WCNAME/ObsX/limit_intervals95_ObsX.pdf")

@@ -1,0 +1,51 @@
+# ============= Parameters =============================================#
+parameters = BAT.NamedTupleDist(
+    WCNAME = -25..25,
+)
+
+
+# ========================================= Observables ============================================#
+include("../Commands_WCNAME.jl")
+
+
+
+# ========================================= Unfolded data ============================================#
+include("../Unfolded_totxt.jl")
+
+
+
+# ============= Measurements ===========================================#
+measurements = (
+    mjet_W_lead_pt_Rebin =           MeasurementDistribution(dxsec_jet_W_lead_pt_Rebin,           obs_jet_W_lead_pt_Rebin,           uncertainties = (stat = uncs_stat_jet_W_lead_pt_Rebin, syst = uncs_max_jet_W_lead_pt_Rebin,),           active=true),
+    mjet_W_lead_y =                  MeasurementDistribution(dxsec_jet_W_lead_y,                  obs_jet_W_lead_y,                  uncertainties = (stat = uncs_stat_jet_W_lead_y, syst = uncs_max_jet_W_lead_y,),                  active=true),
+    mjet_W_sublead_pt_Rebin =        MeasurementDistribution(dxsec_jet_W_sublead_pt_Rebin,        obs_jet_W_sublead_pt_Rebin,        uncertainties = (stat = uncs_stat_jet_W_sublead_pt_Rebin, syst = uncs_max_jet_W_sublead_pt_Rebin,),        active=true),
+    mjet_W_sublead_y =               MeasurementDistribution(dxsec_jet_W_sublead_y,               obs_jet_W_sublead_y,               uncertainties = (stat = uncs_stat_jet_W_sublead_y, syst = uncs_max_jet_W_sublead_y,),               active=true),
+    mjet_W_lead_jet_W_sublead_Dy =   MeasurementDistribution(dxsec_jet_W_lead_jet_W_sublead_Dy,   obs_jet_W_lead_jet_W_sublead_Dy,   uncertainties = (stat = uncs_stat_jet_W_lead_jet_W_sublead_Dy, syst = uncs_max_jet_W_lead_jet_W_sublead_Dy,),   active=true),
+    
+    mmttbar_jet_rad_lead_Rebin =    MeasurementDistribution(dxsec_mttbar_jet_rad_lead_Rebin,    obs_mttbar_jet_rad_lead_Rebin,    uncertainties = (stat = uncs_stat_mttbar_jet_rad_lead_Rebin, syst = uncs_max_mttbar_jet_rad_lead_Rebin,),    active=true),
+
+    mm_jet_rad_lead_jet_rad_sublead_Rebin = MeasurementDistribution(dxsec_m_jet_rad_lead_jet_rad_sublead_Rebin, obs_m_jet_rad_lead_jet_rad_sublead_Rebin, uncertainties = (stat = uncs_stat_m_jet_rad_lead_jet_rad_sublead_Rebin, syst = uncs_max_m_jet_rad_lead_jet_rad_sublead_Rebin,), active=true),
+    )
+
+
+
+# ============= Correlations ===========================================#
+include("../Correlation_data.jl")
+
+bigger_corr_matrix = to_correlation_matrix(measurements,
+    (:mjet_W_lead_pt_Rebin, :mjet_W_lead_pt_Rebin, dist_corr_jet_W_lead_pt_Rebin),
+    (:mjet_W_lead_y, :mjet_W_lead_y, dist_corr_jet_W_lead_y),
+    (:mjet_W_sublead_pt_Rebin, :mjet_W_sublead_pt_Rebin, dist_corr_jet_W_sublead_pt_Rebin),
+    (:mjet_W_sublead_y, :mjet_W_sublead_y, dist_corr_jet_W_sublead_y),
+    (:mjet_W_lead_jet_W_sublead_Dy, :mjet_W_lead_jet_W_sublead_Dy, dist_corr_jet_W_lead_jet_W_sublead_Dy),
+
+    (:mmttbar_jet_rad_lead_Rebin, :mmttbar_jet_rad_lead_Rebin, dist_corr_mttbar_jet_rad_lead_Rebin),
+
+    (:mm_jet_rad_lead_jet_rad_sublead_Rebin, :mm_jet_rad_lead_jet_rad_sublead_Rebin, dist_corr_m_jet_rad_lead_jet_rad_sublead_Rebin),
+
+)
+
+correlations = (
+    stat = Correlation(bigger_corr_matrix, active=true),
+    syst = Correlation(bigger_corr_matrix, active=true),
+)
